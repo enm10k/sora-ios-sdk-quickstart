@@ -2,10 +2,10 @@ import UIKit
 import Sora
 
 // 接続するサーバーのシグナリング URL
-let soraURL = URL(string: "ws://192.168.0.2:5000/signaling")!
+let soraURL = URL(string: "wss://***/signaling")!
 
 // チャネル ID
-let soraChannelId = "ios-quickstart"
+let soraChannelId = "sora"
 
 class ViewController: UIViewController {
     
@@ -150,11 +150,17 @@ class ViewController: UIViewController {
         }
         
         // 接続の設定を行います。
-        let config = Configuration(url: soraURL,
+        var config = Configuration(url: soraURL,
                                    channelId: soraChannelId,
                                    role: role,
                                    multistreamEnabled: multiplicityControl.selectedSegmentIndex == 1)
-        
+        config.simulcastEnabled = true
+        config.videoCodec = .vp8
+        config.videoBitRate = 5000
+
+        let cameraSettings = CameraVideoCapturer.Settings(resolution: .hd1080p, frameRate: 30, canStop: true)
+        config.videoCapturerDevice = VideoCapturerDevice.camera(settings: cameraSettings)
+
         // 接続します。
         // connect() の戻り値 ConnectionTask はここでは使いませんが、
         // 接続試行中の状態を強制的に終了させることができます。
